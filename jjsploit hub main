@@ -1,0 +1,558 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Frame_2 = Instance.new("Frame")
+local jjsploitlogo = Instance.new("ImageLabel")
+local TextLabel = Instance.new("TextLabel")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local universalsilentaim = Instance.new("TextButton")
+local owlhub = Instance.new("TextButton")
+local boltsv5 = Instance.new("TextButton")
+local nullwarehub = Instance.new("TextButton")
+local selexityhub = Instance.new("TextButton")
+local mercuryhub = Instance.new("TextButton")
+local infiniteyield = Instance.new("TextButton")
+local cmdx = Instance.new("TextButton")
+local fatesadmin = Instance.new("TextButton")
+local aimcheatsection = Instance.new("TextLabel")
+local trollguis = Instance.new("TextLabel")
+local adminscripts = Instance.new("TextLabel")
+
+--Properties:
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
+Frame.Position = UDim2.new(0.331711292, 0, 0.367951006, 0)
+Frame.Size = UDim2.new(0, 492, 0, 288)
+
+Frame_2.Parent = Frame
+Frame_2.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+Frame_2.Position = UDim2.new(0, 0, 0.111111112, 0)
+Frame_2.Size = UDim2.new(0, 492, 0, 256)
+
+jjsploitlogo.Name = "jjsploitlogo"
+jjsploitlogo.Parent = Frame
+jjsploitlogo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+jjsploitlogo.Size = UDim2.new(0, 32, 0, 32)
+jjsploitlogo.Image = "rbxassetid://10061250822"
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.Position = UDim2.new(0.065040648, 0, 0, 0)
+TextLabel.Size = UDim2.new(0, 81, 0, 16)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "JJsploit-hub"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 14.000
+TextLabel.TextStrokeColor3 = Color3.fromRGB(67, 67, 67)
+
+ScrollingFrame.Parent = Frame
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrame.BackgroundTransparency = 1.000
+ScrollingFrame.Position = UDim2.new(0, 0, 0.111111112, 0)
+ScrollingFrame.Size = UDim2.new(0, 492, 0, 256)
+
+universalsilentaim.Name = "universal-silentaim"
+universalsilentaim.Parent = ScrollingFrame
+universalsilentaim.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+universalsilentaim.Position = UDim2.new(0.158536583, 0, 0.110134549, 0)
+universalsilentaim.Size = UDim2.new(0, 103, 0, 24)
+universalsilentaim.Font = Enum.Font.SourceSans
+universalsilentaim.Text = "Universal silent aim"
+universalsilentaim.TextColor3 = Color3.fromRGB(255, 255, 255)
+universalsilentaim.TextSize = 14.000
+universalsilentaim.TextWrapped = true
+universalsilentaim.MouseButton1Down:connect(function()
+	if not syn or not protectgui then
+		getgenv().protectgui = function()end
+	end
+	local Library = loadstring(game:HttpGet('https://lindseyhost.com/UI/LinoriaLib.lua'))()
+	Library:SetWatermark("github.com/Averiias")
+
+	local Camera = workspace.CurrentCamera
+	local Players = game:GetService("Players")
+	local RunService = game:GetService("RunService")
+	local GuiService = game:GetService("GuiService")
+
+	local LocalPlayer = Players.LocalPlayer
+	local Mouse = LocalPlayer:GetMouse()
+
+	local GetChildren = game.GetChildren
+	local WorldToScreen = Camera.WorldToScreenPoint
+	local WorldToViewportPoint = Camera.WorldToViewportPoint
+	local GetPartsObscuringTarget = Camera.GetPartsObscuringTarget
+	local FindFirstChild = game.FindFirstChild
+	local RenderStepped = RunService.RenderStepped
+	local GuiInset = GuiService.GetGuiInset
+
+	local resume = coroutine.resume 
+	local create = coroutine.create
+
+	local ValidTargetParts = {"Head", "HumanoidRootPart"};
+
+	local function getPositionOnScreen(Vector)
+		local Vec3, OnScreen = WorldToScreen(Camera, Vector)
+		return Vector2.new(Vec3.X, Vec3.Y), OnScreen
+	end
+
+	local function ValidateArguments(Args, RayMethod)
+		local Matches = 0
+		if #Args < RayMethod.ArgCountRequired then
+			return false
+		end
+		for Pos, Argument in next, Args do
+			if typeof(Argument) == RayMethod.Args[Pos] then
+				Matches = Matches + 1
+			end
+		end
+		return Matches >= RayMethod.ArgCountRequired
+	end
+
+	local function getDirection(Origin, Position)
+		return (Position - Origin).Unit * 1000
+	end
+
+	local function getMousePosition()
+		return Vector2.new(Mouse.X, Mouse.Y)
+	end
+
+	local function IsPlayerVisible(Player)
+		local PlayerCharacter = Player.Character
+		local LocalPlayerCharacter = LocalPlayer.Character
+
+		if not (PlayerCharacter or LocalPlayerCharacter) then return end 
+
+		local PlayerRoot = FindFirstChild(PlayerCharacter, Options.TargetPart.Value) or FindFirstChild(PlayerCharacter, "HumanoidRootPart")
+
+		if not PlayerRoot then return end 
+
+		local CastPoints, IgnoreList = {PlayerRoot.Position, LocalPlayerCharacter, PlayerCharacter}, {LocalPlayerCharacter, PlayerCharacter}
+		local ObscuringObjects = #GetPartsObscuringTarget(Camera, CastPoints, IgnoreList)
+
+		return ((ObscuringObjects == 0 and true) or (ObscuringObjects > 0 and false))
+	end
+
+	local function getClosestPlayer()
+		if not Options.TargetPart.Value then return end
+		local Closest
+		local DistanceToMouse
+		for _, Player in next, GetChildren(Players) do
+			if Player == LocalPlayer then continue end
+			if Toggles.TeamCheck.Value and Player.Team == LocalPlayer.Team then continue end
+
+			local Character = Player.Character
+			if not Character then continue end
+
+			if Toggles.VisibleCheck.Value and not IsPlayerVisible(Player) then continue end
+
+			local HumanoidRootPart = FindFirstChild(Character, "HumanoidRootPart")
+			local Humanoid = FindFirstChild(Character, "Humanoid")
+
+			if not HumanoidRootPart or not Humanoid or Humanoid and Humanoid.Health <= 0 then continue end
+
+			local ScreenPosition, OnScreen = getPositionOnScreen(HumanoidRootPart.Position)
+
+			if not OnScreen then continue end
+
+			local Distance = (getMousePosition() - ScreenPosition).Magnitude
+			if Distance <= (DistanceToMouse or (Toggles.fov_Enabled.Value and Options.Radius.Value) or 2000) then
+				Closest = ((Options.TargetPart.Value == "Random" and Character[ValidTargetParts[math.random(1, #ValidTargetParts)]]) or Character[Options.TargetPart.Value])
+				DistanceToMouse = Distance
+			end
+		end
+		return Closest
+	end
+
+	local Window = Library:CreateWindow("Universal Silent Aim")
+
+	local GeneralTab = Window:AddTab("General")
+	local MainBOX = GeneralTab:AddLeftTabbox("Main")
+	do
+		local Main = MainBOX:AddTab("Main")
+		Main:AddToggle("aim_Enabled", {Text = "Enabled"})
+		Main:AddToggle("TeamCheck", {Text = "Team Check"})
+		Main:AddToggle("VisibleCheck", {Text = "Visible Check"})
+		Main:AddDropdown("TargetPart", {Text = "Target Part", Default = 1, Values = {
+			"Head", "HumanoidRootPart", "Random"
+		}})
+		Main:AddDropdown("Method", {Text = "Silent Aim Method", Default = 1, Values = {
+			"Raycast","FindPartOnRay",
+			"FindPartOnRayWithWhitelist",
+			"FindPartOnRayWithIgnoreList",
+			"Mouse.Hit/Target"
+		}})
+	end
+
+	local FieldOfViewBOX = GeneralTab:AddLeftTabbox("Field Of View")
+	local MiscellaneousBOX = GeneralTab:AddLeftTabbox("Miscellaneous")
+
+	local fov_circle = Drawing.new("Circle")
+	fov_circle.Thickness = 1
+	fov_circle.NumSides = 100
+	fov_circle.Radius = 180
+	fov_circle.Filled = false
+	fov_circle.Visible = false
+	fov_circle.ZIndex = 999
+	fov_circle.Transparency = 1
+	fov_circle.Color = Color3.fromRGB(54, 57, 241)
+
+	local mouse_box = Drawing.new("Square")
+	mouse_box.Visible = true 
+	mouse_box.ZIndex = 999 
+	mouse_box.Color = Color3.fromRGB(54, 57, 241)
+	mouse_box.Thickness = 20 
+	mouse_box.Size = Vector2.new(20, 20)
+	mouse_box.Filled = true 
+
+	local PredictionAmount = 0.165
+
+	do
+		local Main = FieldOfViewBOX:AddTab("Field Of View")
+		Main:AddToggle("fov_Enabled", {Text = "Enabled"})
+		Main:AddSlider("Radius", {Text = "Radius", Min = 0, Max = 360, Default = 180, Rounding = 0}):OnChanged(function()
+			fov_circle.Radius = Options.Radius.Value
+		end)
+		Main:AddToggle("Visible", {Text = "Visible"}):AddColorPicker("Color", {Default = Color3.fromRGB(54, 57, 241)}):OnChanged(function()
+			fov_circle.Visible = Toggles.Visible.Value
+		end)
+		Main:AddToggle("MousePosition", {Text = "Show Fake Mouse Position"}):AddColorPicker("MouseVisualizeColor", {Default = Color3.fromRGB(54, 57, 241)}):OnChanged(function()
+			mouse_box.Visible = Toggles.MousePosition.Value 
+		end)
+
+		local PredictionTab = MiscellaneousBOX:AddTab("Prediction")
+		PredictionTab:AddToggle("Prediction", {Text = "Mouse.Hit/Target Prediction"})
+		PredictionTab:AddSlider("Amount", {Text = "Prediction Amount", Min = 0.165, Max = 1, Default = 0.165, Rounding = 3}):OnChanged(function()
+			PredictionAmount = Options.Amount.Value
+		end)
+	end
+
+	resume(create(function()
+		RenderStepped:Connect(function()
+			if Toggles.MousePosition.Value then 
+				if Toggles.aim_Enabled.Value == true and Options.Method.Value == "Mouse.Hit/Target" then
+					mouse_box.Color = Options.MouseVisualizeColor.Value 
+
+					mouse_box.Visible = ((getClosestPlayer() and true) or false)
+					mouse_box.Position = ((getClosestPlayer() and Vector2.new(WorldToViewportPoint(Camera, getClosestPlayer().Parent.PrimaryPart.Position).X, WorldToViewportPoint(Camera, getClosestPlayer().Parent.PrimaryPart.Position).Y)) or Vector2.new(-9000, -9000)) -- I am too lazy to write this differently - xaxa
+				end
+			end
+
+			if Toggles.Visible.Value then 
+				fov_circle.Visible = Toggles.Visible.Value
+				fov_circle.Color = Options.Color.Value
+				fov_circle.Position = getMousePosition() + Vector2.new(0, 36)
+			end
+		end)
+	end))
+
+	local ExpectedArguments = {
+		FindPartOnRayWithIgnoreList = {
+			ArgCountRequired = 3,
+			Args = {
+				"Instance", "Ray", "table", "boolean", "boolean"
+			}
+		},
+		FindPartOnRayWithWhitelist = {
+			ArgCountRequired = 3,
+			Args = {
+				"Instance", "Ray", "table", "boolean"
+			}
+		},
+		FindPartOnRay = {
+			ArgCountRequired = 2,
+			Args = {
+				"Instance", "Ray", "Instance", "boolean", "boolean"
+			}
+		},
+		Raycast = {
+			ArgCountRequired = 3,
+			Args = {
+				"Instance", "Vector3", "Vector3", "RaycastParams"
+			}
+		}
+	}
+
+	local oldNamecall
+	oldNamecall = hookmetamethod(game, "__namecall", function(...)
+		local Method = getnamecallmethod()
+		local Arguments = {...}
+		local self = Arguments[1]
+
+		if Toggles.aim_Enabled.Value and self == workspace then
+			if Method == "FindPartOnRayWithIgnoreList" and Options.Method.Value == Method then
+				if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRayWithIgnoreList) then
+					local A_Ray = Arguments[2]
+
+					local HitPart = getClosestPlayer()
+					if HitPart then
+						local Origin = A_Ray.Origin
+						local Direction = getDirection(Origin, HitPart.Position)
+						Arguments[2] = Ray.new(Origin, Direction)
+
+						return oldNamecall(unpack(Arguments))
+					end
+				end
+			elseif Method == "FindPartOnRayWithWhitelist" and Options.Method.Value == Method then
+				if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRayWithWhitelist) then
+					local A_Ray = Arguments[2]
+
+					local HitPart = getClosestPlayer()
+					if HitPart then
+						local Origin = A_Ray.Origin
+						local Direction = getDirection(Origin, HitPart.Position)
+						Arguments[2] = Ray.new(Origin, Direction)
+
+						return oldNamecall(unpack(Arguments))
+					end
+				end
+			elseif (Method == "FindPartOnRay" or Method == "findPartOnRay") and Options.Method.Value:lower() == Method:lower() then
+				if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRay) then
+					local A_Ray = Arguments[2]
+
+					local HitPart = getClosestPlayer()
+					if HitPart then
+						local Origin = A_Ray.Origin
+						local Direction = getDirection(Origin, HitPart.Position)
+						Arguments[2] = Ray.new(Origin, Direction)
+
+						return oldNamecall(unpack(Arguments))
+					end
+				end
+			elseif Method == "Raycast" and Options.Method.Value == Method then
+				if ValidateArguments(Arguments, ExpectedArguments.Raycast) then
+					local A_Origin = Arguments[2]
+
+					local HitPart = getClosestPlayer()
+					if HitPart then
+						Arguments[3] = getDirection(A_Origin, HitPart.Position)
+
+						return oldNamecall(unpack(Arguments))
+					end
+				end
+			end
+		end
+		return oldNamecall(...)
+	end)
+
+	local oldIndex = nil 
+	oldIndex = hookmetamethod(game, "__index", function(self, Index)
+		if self == Mouse and (Index == "Hit" or Index == "Target") then 
+			if Toggles.aim_Enabled.Value == true and Options.Method.Value == "Mouse.Hit/Target" and getClosestPlayer() then
+				local HitPart = getClosestPlayer()
+
+				return ((Index == "Hit" and ((Toggles.Prediction.Value == false and HitPart.CFrame) or (Toggles.Prediction.Value == true and (HitPart.CFrame + (HitPart.Velocity * PredictionAmount))))) or (Index == "Target" and HitPart))
+			end
+		end
+
+		return oldIndex(self, Index)
+	end)
+end)
+
+owlhub.Name = "owl-hub"
+owlhub.Parent = ScrollingFrame
+owlhub.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+owlhub.Position = UDim2.new(0.394308925, 0, 0.110134549, 0)
+owlhub.Size = UDim2.new(0, 103, 0, 24)
+owlhub.Font = Enum.Font.SourceSans
+owlhub.Text = "Owl hub"
+owlhub.TextColor3 = Color3.fromRGB(255, 255, 255)
+owlhub.TextSize = 14.000
+owlhub.MouseButton1Down:connect(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))();
+end)
+
+boltsv5.Name = "bolts-v5"
+boltsv5.Parent = ScrollingFrame
+boltsv5.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+boltsv5.Position = UDim2.new(0.630081296, 0, 0.110134549, 0)
+boltsv5.Size = UDim2.new(0, 103, 0, 24)
+boltsv5.Font = Enum.Font.SourceSans
+boltsv5.Text = "Bolts v5 arsenal"
+boltsv5.TextColor3 = Color3.fromRGB(255, 255, 255)
+boltsv5.TextSize = 14.000
+boltsv5.MouseButton1Down:connect(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/fusiongreg/BoltsHubV5/main/BoltsHubV5"))()
+	-- thank me for not making you go through any ads :) consider subscribing :)
+	-- youtube.com/VapourYT
+	-- vapouryt.co.uk
+end)
+
+nullwarehub.Name = "nullware-hub"
+nullwarehub.Parent = ScrollingFrame
+nullwarehub.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+nullwarehub.Position = UDim2.new(0.630081296, 0, 0.266384542, 0)
+nullwarehub.Size = UDim2.new(0, 103, 0, 24)
+nullwarehub.Font = Enum.Font.SourceSans
+nullwarehub.Text = "Nullware hub"
+nullwarehub.TextColor3 = Color3.fromRGB(255, 255, 255)
+nullwarehub.TextSize = 14.000
+nullwarehub.MouseButton1Down:connect(function()
+	local LocalPlayer = game:GetService("Players").LocalPlayer
+	local Heartbeat = game:GetService("RunService").Heartbeat
+
+	Heartbeat:Connect(function()
+		LocalPlayer.MaximumSimulationRadius = math.huge
+		sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+	end)
+	-- Script above is a fix to limbs falling --
+
+	-- Nullware Hub V3 | --
+	getgenv().Theme = "Purple" -- To change the UI Theme, set this to one of the following options: "Red", "Purple", "Blue", "Green", "Yellow"
+	loadstring(game:HttpGet("https://gist.githubusercontent.com/M6HqVBcddw2qaN4s/2d722888a388017c18028cd434c43a25/raw/dcccf1027fe4b90780e47767aaf584389c9d7771/EULma3fU90PUOKUn?identifier=".. (function()local a=""for b=1,256 do local c=math.random(1,3)a=a..string.char(c==1 and math.random(48,57)or c==2 and math.random(97,122)or c==3 and math.random(65,90))end;return a end)()))()
+end)
+
+selexityhub.Name = "selexity-hub"
+selexityhub.Parent = ScrollingFrame
+selexityhub.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+selexityhub.Position = UDim2.new(0.394308925, 0, 0.266384542, 0)
+selexityhub.Size = UDim2.new(0, 103, 0, 24)
+selexityhub.Font = Enum.Font.SourceSans
+selexityhub.Text = "Selexity hub"
+selexityhub.TextColor3 = Color3.fromRGB(255, 255, 255)
+selexityhub.TextSize = 14.000
+selexityhub.MouseButton1Down:connect(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/stangithuboffical/selexity/main/Main", true))()
+end)
+
+mercuryhub.Name = "mercury-hub"
+mercuryhub.Parent = ScrollingFrame
+mercuryhub.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+mercuryhub.Position = UDim2.new(0.158536568, 0, 0.266384542, 0)
+mercuryhub.Size = UDim2.new(0, 103, 0, 24)
+mercuryhub.Font = Enum.Font.SourceSans
+mercuryhub.Text = "Mercury hub"
+mercuryhub.TextColor3 = Color3.fromRGB(255, 255, 255)
+mercuryhub.TextSize = 14.000
+mercuryhub.MouseButton1Down:connect(function()
+	loadstring (game:HttpGet(( 'https://raw.githubusercontent.com/Gogogamer61/LXHub-Main/main/LXHub%20Main%20Script' ), true ))()
+end)
+
+infiniteyield.Name = "infinite-yield"
+infiniteyield.Parent = ScrollingFrame
+infiniteyield.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+infiniteyield.Position = UDim2.new(0.630081296, 0, 0.433051229, 0)
+infiniteyield.Size = UDim2.new(0, 103, 0, 24)
+infiniteyield.Font = Enum.Font.SourceSans
+infiniteyield.Text = "Infinite yield"
+infiniteyield.TextColor3 = Color3.fromRGB(255, 255, 255)
+infiniteyield.TextSize = 14.000
+infiniteyield.MouseButton1Down:connect(function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+cmdx.Name = "cmd-x"
+cmdx.Parent = ScrollingFrame
+cmdx.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+cmdx.Position = UDim2.new(0.394308925, 0, 0.433051229, 0)
+cmdx.Size = UDim2.new(0, 103, 0, 24)
+cmdx.Font = Enum.Font.SourceSans
+cmdx.Text = "CMD  x"
+cmdx.TextColor3 = Color3.fromRGB(255, 255, 255)
+cmdx.TextSize = 14.000
+cmdx.MouseButton1Down:connect(function()
+	--Not my script so if any bugs i dont control the scripts thanks.
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source', true))()
+end)
+
+fatesadmin.Name = "fates-admin"
+fatesadmin.Parent = ScrollingFrame
+fatesadmin.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+fatesadmin.Position = UDim2.new(0.158536568, 0, 0.433051229, 0)
+fatesadmin.Size = UDim2.new(0, 103, 0, 24)
+fatesadmin.Font = Enum.Font.SourceSans
+fatesadmin.Text = "Fates admin"
+fatesadmin.TextColor3 = Color3.fromRGB(255, 255, 255)
+fatesadmin.TextSize = 14.000
+fatesadmin.MouseButton1Down:connect(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/fatesc/fates-admin/main/main.lua"))();
+end)
+
+aimcheatsection.Name = "aim-cheat-section"
+aimcheatsection.Parent = ScrollingFrame
+aimcheatsection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+aimcheatsection.BackgroundTransparency = 1.000
+aimcheatsection.Position = UDim2.new(0.158536583, 0, 0.0617404506, 0)
+aimcheatsection.Size = UDim2.new(0, 335, 0, 17)
+aimcheatsection.Font = Enum.Font.SourceSans
+aimcheatsection.Text = "Aim cheats"
+aimcheatsection.TextColor3 = Color3.fromRGB(0, 0, 0)
+aimcheatsection.TextScaled = true
+aimcheatsection.TextSize = 14.000
+aimcheatsection.TextWrapped = true
+
+trollguis.Name = "troll-guis"
+trollguis.Parent = ScrollingFrame
+trollguis.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+trollguis.BackgroundTransparency = 1.000
+trollguis.Position = UDim2.new(0.158536583, 0, 0.235351562, 0)
+trollguis.Size = UDim2.new(0, 335, 0, 17)
+trollguis.Font = Enum.Font.SourceSans
+trollguis.Text = "Troll guis"
+trollguis.TextColor3 = Color3.fromRGB(0, 0, 0)
+trollguis.TextScaled = true
+trollguis.TextSize = 14.000
+trollguis.TextWrapped = true
+
+adminscripts.Name = "admin-scripts"
+adminscripts.Parent = ScrollingFrame
+adminscripts.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+adminscripts.BackgroundTransparency = 1.000
+adminscripts.Position = UDim2.new(0.158536583, 0, 0.402018249, 0)
+adminscripts.Size = UDim2.new(0, 335, 0, 17)
+adminscripts.Font = Enum.Font.SourceSans
+adminscripts.Text = "Admin scripts"
+adminscripts.TextColor3 = Color3.fromRGB(0, 0, 0)
+adminscripts.TextScaled = true
+adminscripts.TextSize = 14.000
+adminscripts.TextWrapped = true
+
+-- Scripts:
+
+local function EIHJ_fake_script() -- Frame.LocalScript 
+	local script = Instance.new('LocalScript', Frame)
+
+	local UIS = game:GetService('UserInputService')
+	local frame = script.Parent
+	local dragToggle = nil
+	local dragSpeed = 0.25
+	local dragStart = nil
+	local startPos = nil
+	
+	local function updateInput(input)
+		local delta = input.Position - dragStart
+		local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		game:GetService('TweenService'):Create(frame, TweenInfo.new(dragSpeed), {Position = position}):Play()
+	end
+	
+	frame.InputBegan:Connect(function(input)
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then 
+			dragToggle = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+	
+	UIS.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			if dragToggle then
+				updateInput(input)
+			end
+		end
+	end)
+end
+coroutine.wrap(EIHJ_fake_script)()
